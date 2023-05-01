@@ -1,17 +1,17 @@
 import React from 'react';
-import styles from './Auth.module.scss';
-import { Button, Form, Input, notification } from 'antd';
-import { LoginFormDto } from '@/api/dto/auth.dto';
-
-import * as Api from '@/api';
 import { setCookie } from 'nookies';
 import { useRouter } from 'next/router';
+import { Button, Form, Input, notification } from 'antd';
+import { RegisterFormDto } from '@/api/dto/auth.dto';
+import * as Api from '@/api';
 
-const LoginForm = () => {
+import styles from './Auth.module.scss';
+
+const RegisterForm = () => {
   const router = useRouter();
-  const onSubmit = async (values: LoginFormDto) => {
+  const onSubmit = async (values: RegisterFormDto) => {
     try {
-      const { token } = await Api.auth.login(values);
+      const { token } = await Api.auth.register(values);
       notification.success({
         message: 'Успешно!',
         description: 'Перенаправление в админ-панель!',
@@ -23,11 +23,11 @@ const LoginForm = () => {
       router.push('/dashboard');
       // location.href = '/dashboard';
     } catch (error) {
-      console.warn('LoginForm', error);
+      console.warn('RegisterForm', error);
 
       notification.error({
         message: 'Ошибка!',
-        description: 'Неверный логин или пароль',
+        description: 'Ошибка при регистрации',
         duration: 2,
       });
     }
@@ -45,6 +45,14 @@ const LoginForm = () => {
         </Form.Item>
 
         <Form.Item
+          label="Имя"
+          name="fullName"
+          rules={[{ required: true, message: 'Укажите полное имя!' }]}
+        >
+          <Input />
+        </Form.Item>
+
+        <Form.Item
           label="Пароль"
           name="password"
           rules={[{ required: true, message: 'Введите пароль!' }]}
@@ -53,7 +61,7 @@ const LoginForm = () => {
         </Form.Item>
         <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
           <Button type="primary" htmlType="submit">
-            Войти
+            Регистрация
           </Button>
         </Form.Item>
       </Form>
@@ -61,4 +69,4 @@ const LoginForm = () => {
   );
 };
 
-export default LoginForm;
+export default RegisterForm;
