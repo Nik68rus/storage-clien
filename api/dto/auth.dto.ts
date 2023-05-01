@@ -4,5 +4,5 @@ export interface LoginFormDto {
 }
 
 export interface LoginResponseDto {
-  tokwn: string;
+  token: string;
 }
