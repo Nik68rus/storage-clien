@@ -8,7 +8,7 @@ export interface LoginResponseDto {
 }
 
 export interface RegisterFormDto extends LoginFormDto {
-  fullNAme: string;
+  fullName: string;
 }
 
 export type RegisterResponseDto = LoginResponseDto;
