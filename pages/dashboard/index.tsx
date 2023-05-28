@@ -1,18 +1,35 @@
-import { GetServerSideProps, GetServerSidePropsContext, NextPage } from 'next';
-import nookies from 'nookies';
-import axios from '@/core/axios';
-import * as Api from '@/api';
+import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { checkAuth } from '@/utils/checkAuth';
-import { Header } from '@/components/Header/Header';
+import { NextPageWithLayout } from '../_app';
+import { Layout } from '@/layouts/Layout';
+import styles from '@/styles/Home.module.scss';
+import { Button, Menu } from 'antd';
+import { useRouter } from 'next/router';
+import { DeleteOutlined, FileImageOutlined, FileOutlined } from '@ant-design/icons';
+import { UploadButton } from '@/components/UploadButton/UploadButton';
+import { FileItem } from '@/api/dto/files.dto';
+import { FileList } from '@/components/FileList/FileList';
+import * as Api from "@/api";
+import { DashboardLayout } from '@/layouts/DashboardLayout';
+import { FileActions } from '@/components/FileActions/FileActions';
+import { Files } from '@/modules/Files';
 
-const DashboardPage: NextPage = () => {
-  return (
-    <main>
-      <Header />
-      <h1>Dashboard</h1>
-    </main>
-  );
+interface Props {
+  items: FileItem[]
+}
+
+const DashboardPage: NextPageWithLayout<Props> = ({items}) => {
+  const router = useRouter();
+  const selectedMenu = router.pathname;
+
+  return <Files items={items} withActions />
 };
+
+DashboardPage.getLayout = (page: React.ReactElement) => {
+  return <Layout title="Dashboard / Главная">
+    <DashboardLayout>{page}</DashboardLayout>
+  </Layout>
+}
 
 export const getServerSideProps: GetServerSideProps = async (
   ctx: GetServerSidePropsContext
@@ -23,8 +40,19 @@ export const getServerSideProps: GetServerSideProps = async (
     return authProps
   }
 
-  return {
-    props: {}
+  try {
+    const items = await Api.files.getAll();
+
+    return {
+      props: {
+        items,
+      },
+    };
+  } catch (err) {
+    console.log(err);
+    return {
+      props: { items: [] },
+    };
   }
 };
 
